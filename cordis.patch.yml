@@ -1,0 +1,12 @@
+# dsh-unified-desktop — DSH bundle patch layer
+#
+# 一个 MCP 入口，聚合两个 Windows 自动化后端：
+#   · wincu (dsh-computer-use-win)  → UI Automation 树、OCR、元素级语义操作
+#   · windows-mcp (CursorTouch)     → 浏览器 DOM、区域/多屏截图、应用启动、通知
+#
+# 模型看到的工具名为 mcp__desk__<tool>，共 29 个去重工具。
+# 危险工具（PowerShell / Registry / FileSystem / Process）不暴露。
+
+- insert:
+    - id: mcp-unified-desktop
+      name: 'dsh-unified-desktop'

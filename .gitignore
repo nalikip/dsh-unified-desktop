@@ -1,0 +1,28 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 测试产物
+test/*.log
+*.log
+tools-measure.json
+final-measure.json
+winmcp-tools-raw.json
+wincu-tools-raw.json
+wincu-tools-real.json
+
+# 运行时数据
+audit.log
+*.tmp
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 环境
+.env
+.env.*
+!.env.example

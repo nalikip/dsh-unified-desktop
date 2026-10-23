@@ -1,0 +1,66 @@
+{
+  "name": "dsh-unified-desktop",
+  "version": "0.1.0",
+  "description": "One MCP plugin that unifies Windows desktop automation: wincu (UI Automation + OCR + element-level actions) and windows-mcp (browser DOM + region capture + app launch), exposed as a single de-duplicated tool surface with an inline policy guard.",
+  "type": "module",
+  "main": "lib/dsh-plugin.mjs",
+  "files": [
+    "lib/",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "exports": {
+    ".": "./lib/dsh-plugin.mjs",
+    "./aggregate": "./lib/aggregate.mjs",
+    "./catalog": "./lib/catalog.mjs",
+    "./guard": "./lib/guard.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node test/run-all.mjs",
+    "test:catalog": "node test/catalog-test.mjs",
+    "test:config": "node test/config-test.mjs",
+    "test:e2e": "node test/aggregate-e2e.mjs",
+    "test:concurrency": "node test/concurrency-test.mjs",
+    "test:electron": "node test/electron-verify.mjs",
+    "check": "node --check lib/aggregate.mjs && node --check lib/catalog.mjs && node --check lib/dsh-plugin.mjs && node --check lib/guard.mjs"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "mcp",
+    "computer-use",
+    "windows",
+    "desktop-automation",
+    "ui-automation",
+    "ocr",
+    "browser-dom"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "os": [
+    "win32"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-mcp-client": ">=0.1.0-rc.2 || >=0.2.0-rc.2",
+    "@deepseek-ai/schemastery": ">=3.18.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-mcp-client": {
+      "optional": true
+    },
+    "@deepseek-ai/schemastery": {
+      "optional": true
+    }
+  }
+}
