@@ -6,6 +6,8 @@
   "main": "lib/dsh-plugin.mjs",
   "files": [
     "lib/",
+    "scripts/",
+    "docs/",
     "cordis.patch.yml",
     "README.md",
     "CHANGELOG.md",
