@@ -247,6 +247,10 @@ node scripts/patch-backend.mjs --check
 4. **DOM 模式依赖浏览器**。`read_webpage` 的 `use_dom` 需要 Chrome/Edge/Firefox 活动标签页。
 5. **参数未做归一化**。两个后端的参数名保持原样（如 wincu 用 `elementId`，wm 用 `loc`/`label`），
    模型需要按各工具自己的 schema 传参。归一化在 `Unreleased` 计划中。
+6. **依赖本地后端补丁**。windows-mcp 0.8.8 的桌面控制门在部分硬件上不可用，
+   本项目通过 `scripts/patch-backend.mjs` 修复。已向上游报告
+   （[CursorTouch/Windows-MCP#498](https://github.com/CursorTouch/Windows-MCP/issues/498)）；
+   若上游合并，可移除本地补丁。详见 [docs/upstream-tracking.md](docs/upstream-tracking.md)。
 
 ## 设计取舍
 
