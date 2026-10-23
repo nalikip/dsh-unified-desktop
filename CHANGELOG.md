@@ -80,5 +80,27 @@
 
 同时新增设置项 `idleThresholdSeconds`（默认 0.5 秒）。
 
+### 新增
+
+- `scripts/diagnose-gate.mjs`：一键诊断控制门状态（补丁状态 + 钩子统计 + MCP 实测）
+- `test/backend-patch-test.mjs`：补丁状态与行为测试（14 断言，无后端时跳过）
+- `docs/diagnosis-user-control.md`：完整排查过程与证据链
+- `docs/tool-footprint.json`：两个后端的工具体积实测数据
+
+### 验证
+
+真实环境（DSH Desktop，重启后）：
+
+```
+control_status  → {"state":"ready","wait_seconds":0.0}   （修复前 9.98）
+display_info    → 成功返回显示器信息                       （修复前 USER_CONTROL）
+screenshot      → 成功返回区域截图                         （修复前 USER_CONTROL）
+read_webpage    → 成功到达浏览器层                         （修复前 USER_CONTROL）
+```
+
+诊断脚本 5 秒采样：`counts {mouse:0, key:0, raw:0}`，`ready_ratio 1.00`。
+
+测试：6 个套件全部通过（新增 backend-patch 套件）。
+
 [Unreleased]: https://github.com/your-org/dsh-unified-desktop/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/your-org/dsh-unified-desktop/releases/tag/v0.1.0

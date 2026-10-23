@@ -161,21 +161,33 @@ server 会**静默退出（exit 0，无任何输出）**。
 ## 测试
 
 ```powershell
-npm test                        # 全部 5 个套件，90 个断言
+npm test                        # 全部 6 个套件
 ```
 
 单独跑：
 
 ```powershell
-node test/catalog-test.mjs      # 目录一致性、去重、危险工具排除（43 断言）
-node test/config-test.mjs       # 配置校验与路径解析（21 断言）
-node test/aggregate-e2e.mjs     # 工具面合并、双后端路由（13 断言）
-node test/concurrency-test.mjs  # 并发不串号（6 断言）
-node test/electron-verify.mjs   # DSH 真实 Electron 运行时（7 断言）
+node test/catalog-test.mjs        # 目录一致性、去重、危险工具排除（43 断言）
+node test/config-test.mjs         # 配置校验与路径解析（21 断言）
+node test/backend-patch-test.mjs  # 后端补丁状态与行为（14 断言，无后端时跳过）
+node test/aggregate-e2e.mjs       # 工具面合并、双后端路由（13 断言）
+node test/concurrency-test.mjs    # 并发不串号（6 断言）
+node test/electron-verify.mjs     # DSH 真实 Electron 运行时（7 断言）
 ```
 
-> `catalog-test` 与 `config-test` 不需要后端，任何环境都能跑（CI 默认跑这两个）。
-> 其余三个需要本机已安装 wincu 与 windows-mcp。
+> `catalog-test`、`config-test`、`backend-patch-test` 不需要运行中的后端，任何环境都能跑
+> （CI 默认跑这三个）。其余三个需要本机已安装 wincu 与 windows-mcp。
+
+## 诊断
+
+遇到 wm 工具被拒（`USER_CONTROL`）时：
+
+```powershell
+node scripts/diagnose-gate.mjs
+```
+
+输出补丁状态、5 秒内的钩子触发统计、以及 MCP 层实测结果。
+完整排查过程见 [docs/diagnosis-user-control.md](docs/diagnosis-user-control.md)。
 
 ## 排错
 

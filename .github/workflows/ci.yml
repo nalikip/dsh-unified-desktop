@@ -32,6 +32,12 @@ jobs:
       - name: 配置与路径解析
         run: node test/config-test.mjs
 
+      - name: 后端补丁脚本可用性
+        run: |
+          node --check scripts/patch-backend.mjs
+          node --check scripts/diagnose-gate.mjs
+          node test/backend-patch-test.mjs
+
   # 端到端测试：需要真实安装 wincu 与 windows-mcp
   # 在 CI 上默认跳过；手动触发（workflow_dispatch）或自托管 runner 时才跑。
   e2e:

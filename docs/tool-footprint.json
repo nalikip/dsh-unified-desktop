@@ -1,0 +1,291 @@
+{
+  "generatedAt": "2026-10-22T15:31:53.197Z",
+  "wincu": {
+    "count": 23,
+    "chars": 204040,
+    "tokens": 56678,
+    "rows": [
+      {
+        "name": "windows_computer_use_type_text",
+        "chars": 11668,
+        "desc": 584,
+        "schema": 11011
+      },
+      {
+        "name": "windows_computer_use_ocr",
+        "chars": 11653,
+        "desc": 460,
+        "schema": 11126
+      },
+      {
+        "name": "windows_computer_use_wait_for",
+        "chars": 11648,
+        "desc": 389,
+        "schema": 11187
+      },
+      {
+        "name": "windows_computer_use_snapshot",
+        "chars": 11569,
+        "desc": 79,
+        "schema": 11418
+      },
+      {
+        "name": "windows_computer_use_find",
+        "chars": 11509,
+        "desc": 357,
+        "schema": 11084
+      },
+      {
+        "name": "windows_computer_use_click",
+        "chars": 11420,
+        "desc": 564,
+        "schema": 10787
+      },
+      {
+        "name": "windows_computer_use_screenshot",
+        "chars": 11130,
+        "desc": 340,
+        "schema": 10716
+      },
+      {
+        "name": "windows_computer_use_keypress",
+        "chars": 11107,
+        "desc": 308,
+        "schema": 10727
+      },
+      {
+        "name": "windows_computer_use_double_click",
+        "chars": 11023,
+        "desc": 160,
+        "schema": 10787
+      },
+      {
+        "name": "windows_computer_use_drag",
+        "chars": 10938,
+        "desc": 42,
+        "schema": 10828
+      },
+      {
+        "name": "windows_computer_use_accessibility_tree",
+        "chars": 10902,
+        "desc": 56,
+        "schema": 10764
+      },
+      {
+        "name": "windows_computer_use_set_value",
+        "chars": 10880,
+        "desc": 70,
+        "schema": 10737
+      },
+      {
+        "name": "windows_computer_use_move_window",
+        "chars": 10869,
+        "desc": 170,
+        "schema": 10624
+      },
+      {
+        "name": "windows_computer_use_scroll",
+        "chars": 10852,
+        "desc": 78,
+        "schema": 10704
+      },
+      {
+        "name": "windows_computer_use_invoke",
+        "chars": 10839,
+        "desc": 118,
+        "schema": 10651
+      },
+      {
+        "name": "windows_computer_use_element_info",
+        "chars": 10770,
+        "desc": 69,
+        "schema": 10625
+      },
+      {
+        "name": "windows_computer_use_move",
+        "chars": 10764,
+        "desc": 74,
+        "schema": 10622
+      },
+      {
+        "name": "windows_computer_use_focus",
+        "chars": 10716,
+        "desc": 46,
+        "schema": 10601
+      },
+      {
+        "name": "windows_computer_use_close_window",
+        "chars": 1557,
+        "desc": 313,
+        "schema": 1168
+      },
+      {
+        "name": "windows_computer_use_activate_window",
+        "chars": 1421,
+        "desc": 174,
+        "schema": 1168
+      },
+      {
+        "name": "windows_computer_use_list_windows",
+        "chars": 318,
+        "desc": 56,
+        "schema": 186
+      },
+      {
+        "name": "windows_computer_use_wait",
+        "chars": 259,
+        "desc": 54,
+        "schema": 137
+      },
+      {
+        "name": "windows_computer_use_health",
+        "chars": 228,
+        "desc": 96,
+        "schema": 62
+      }
+    ]
+  },
+  "winmcp": {
+    "count": 21,
+    "chars": 17715,
+    "tokens": 4921,
+    "rows": [
+      {
+        "name": "Snapshot",
+        "chars": 2320,
+        "desc": 1514,
+        "schema": 755
+      },
+      {
+        "name": "FileSystem",
+        "chars": 1593,
+        "desc": 620,
+        "schema": 920
+      },
+      {
+        "name": "Screenshot",
+        "chars": 1546,
+        "desc": 968,
+        "schema": 525
+      },
+      {
+        "name": "App",
+        "chars": 1125,
+        "desc": 397,
+        "schema": 682
+      },
+      {
+        "name": "Move",
+        "chars": 1001,
+        "desc": 415,
+        "schema": 539
+      },
+      {
+        "name": "Type",
+        "chars": 990,
+        "desc": 422,
+        "schema": 521
+      },
+      {
+        "name": "Scrape",
+        "chars": 924,
+        "desc": 548,
+        "schema": 327
+      },
+      {
+        "name": "Registry",
+        "chars": 891,
+        "desc": 394,
+        "schema": 428
+      },
+      {
+        "name": "Scroll",
+        "chars": 798,
+        "desc": 300,
+        "schema": 449
+      },
+      {
+        "name": "PowerShell",
+        "chars": 787,
+        "desc": 580,
+        "schema": 154
+      },
+      {
+        "name": "WaitFor",
+        "chars": 787,
+        "desc": 318,
+        "schema": 419
+      },
+      {
+        "name": "Process",
+        "chars": 769,
+        "desc": 259,
+        "schema": 456
+      },
+      {
+        "name": "Click",
+        "chars": 723,
+        "desc": 316,
+        "schema": 359
+      },
+      {
+        "name": "MultiSelect",
+        "chars": 636,
+        "desc": 193,
+        "schema": 389
+      },
+      {
+        "name": "Notification",
+        "chars": 576,
+        "desc": 60,
+        "schema": 461
+      },
+      {
+        "name": "MultiEdit",
+        "chars": 511,
+        "desc": 154,
+        "schema": 305
+      },
+      {
+        "name": "Shortcut",
+        "chars": 431,
+        "desc": 254,
+        "schema": 114
+      },
+      {
+        "name": "Clipboard",
+        "chars": 421,
+        "desc": 170,
+        "schema": 195
+      },
+      {
+        "name": "Wait",
+        "chars": 410,
+        "desc": 248,
+        "schema": 115
+      },
+      {
+        "name": "DisplayInventory",
+        "chars": 292,
+        "desc": 171,
+        "schema": 62
+      },
+      {
+        "name": "ControlStatus",
+        "chars": 184,
+        "desc": 66,
+        "schema": 62
+      }
+    ]
+  },
+  "combined": {
+    "count": 44,
+    "chars": 221755,
+    "tokens": 61599
+  },
+  "lite": {
+    "count": 19,
+    "chars": 100495,
+    "tokens": 27915
+  }
+}

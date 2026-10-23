@@ -9,6 +9,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const SUITES = [
   { name: 'catalog', file: 'catalog-test.mjs', desc: '工具目录一致性与去重' },
   { name: 'config', file: 'config-test.mjs', desc: '配置校验与路径解析' },
+  { name: 'backend-patch', file: 'backend-patch-test.mjs', desc: '后端补丁状态与行为（无后端时跳过）' },
   { name: 'aggregate', file: 'aggregate-e2e.mjs', desc: '聚合工具面与双后端路由' },
   { name: 'concurrency', file: 'concurrency-test.mjs', desc: '并发串行化，响应不串号' },
   { name: 'electron', file: 'electron-verify.mjs', desc: 'DSH 真实 Electron 运行时' },
