@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # 静态检查 + 纯逻辑测试（不需要桌面/后端，任何平台都能跑）
+  static:
+    name: 静态检查与单元测试
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 语法检查
+        run: |
+          node --check lib/aggregate.mjs
+          node --check lib/catalog.mjs
+          node --check lib/dsh-plugin.mjs
+          node --check lib/guard.mjs
+
+      - name: 工具目录一致性
+        run: node test/catalog-test.mjs
+
+      - name: 配置与路径解析
+        run: node test/config-test.mjs
+
+  # 端到端测试：需要真实安装 wincu 与 windows-mcp
+  # 在 CI 上默认跳过；手动触发（workflow_dispatch）或自托管 runner 时才跑。
+  e2e:
+    name: 端到端（需桌面环境）
+    runs-on: windows-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 安装 windows-mcp
+        run: |
+          irm https://astral.sh/uv/install.ps1 | iex
+          uv python install 3.14
+          uv tool install windows-mcp --python 3.14
+
+      - name: 探测后端可用性
+        id: probe
+        shell: pwsh
+        run: |
+          $wcu = Get-ChildItem "$env:APPDATA\dsh-desktop\harness\profiles\.generations\live" -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like 'dsh-computer-use-win+*' } |
+            ForEach-Object { Join-Path $_.FullName 'node_modules\dsh-computer-use-win\mcp\server.mjs' } |
+            Where-Object { Test-Path $_ } | Select-Object -First 1
+          $wm = Join-Path $env:APPDATA 'uv\tools\windows-mcp\Scripts\windows-mcp.exe'
+          if ($wcu -and (Test-Path $wm)) {
+            "available=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          } else {
+            "available=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "跳过：缺少 wincu 或 windows-mcp"
+          }
+
+      - name: 聚合与路由
+        if: steps.probe.outputs.available == 'true'
+        run: node test/aggregate-e2e.mjs
+
+      - name: 并发串行化
+        if: steps.probe.outputs.available == 'true'
+        run: node test/concurrency-test.mjs

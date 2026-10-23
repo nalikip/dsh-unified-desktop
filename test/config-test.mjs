@@ -1,6 +1,34 @@
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+
+// dsh-plugin.mjs 顶部 import @deepseek-ai/schemastery。真实环境中由 DSH 宿主提供；
+// 独立跑测试时可能缺失，这里按需生成一个最小 stub，保证测试在 CI 上也能跑。
+const STUB = path.join(process.cwd(), 'node_modules', '@deepseek-ai', 'schemastery')
+if (!existsSync(path.join(STUB, 'index.js'))) {
+  mkdirSync(STUB, { recursive: true })
+  writeFileSync(path.join(STUB, 'package.json'), JSON.stringify({
+    name: '@deepseek-ai/schemastery', version: '0.0.0-stub', type: 'module',
+    main: 'index.js', exports: './index.js',
+  }))
+  writeFileSync(path.join(STUB, 'index.js'), `
+function make() {
+  const state = { __default: undefined }
+  const self = new Proxy(state, {
+    get(t, k) {
+      if (k === 'toString') return () => 'stub'
+      if (k === 'default') return v => { state.__default = v; return self }
+      if (k === '~standard') return undefined
+      return () => self
+    },
+  })
+  return self
+}
+const z = { string: () => make(), number: () => make(), boolean: () => make(), array: () => make(), object: () => make(), const: () => make(), union: () => make() }
+export default z
+`)
+  console.log('(已生成 schemastery stub 供测试使用)')
+}
 
 const mod = await import(pathToFileURL(path.join(process.cwd(), 'lib', 'dsh-plugin.mjs')).href)
 

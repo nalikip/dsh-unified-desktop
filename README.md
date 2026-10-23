@@ -150,10 +150,60 @@ server 会**静默退出（exit 0，无任何输出）**。
 ## 测试
 
 ```powershell
-node test/config-test.mjs       # 配置与路径解析（21 断言）
-node test/aggregate-e2e.mjs     # 聚合与路由（13 断言）
-node test/electron-verify.mjs   # DSH 真实运行时（7 断言）
+npm test                        # 全部 5 个套件，90 个断言
 ```
+
+单独跑：
+
+```powershell
+node test/catalog-test.mjs      # 目录一致性、去重、危险工具排除（43 断言）
+node test/config-test.mjs       # 配置校验与路径解析（21 断言）
+node test/aggregate-e2e.mjs     # 工具面合并、双后端路由（13 断言）
+node test/concurrency-test.mjs  # 并发不串号（6 断言）
+node test/electron-verify.mjs   # DSH 真实 Electron 运行时（7 断言）
+```
+
+> `catalog-test` 与 `config-test` 不需要后端，任何环境都能跑（CI 默认跑这两个）。
+> 其余三个需要本机已安装 wincu 与 windows-mcp。
+
+## 排错
+
+**工具没出现（`mcp__desk__*` 不存在）**
+
+1. 看日志 `%APPDATA%\dsh-desktop\logs\harness.log`，搜 `[aggregate]`
+2. 正常情况下应有：
+   ```
+   [aggregate] unified-desktop 0.1.0 ready (wcu=true wm=true guard=true)
+   [wcu] windows-computer-use MCP server 0.5.0 ready
+   [wm] Starting MCP server 'windows-mcp'
+   ```
+3. 如果 `wcu=false`：检查 wincu 是否安装。路径必须是
+   `profiles\.generations\live\dsh-computer-use-win+*\node_modules\dsh-computer-use-win\mcp\server.mjs`
+4. 如果 `wm=false`：`uv tool install windows-mcp --python 3.14`
+
+**loader 一直显示 `still waiting for 1 plugin entries`**
+
+这是正常的。MCP 初始化约需 30-40 秒（两个后端依次启动），loader 只是计时提示，
+插件就绪后不再刷新该行。
+
+**工具重复出现（`mcp__wincu__*` 和 `mcp__desk__*` 都有）**
+
+说明独立的 wincu 没有被禁用。在 profile 的 `cordis.patch.yml` 加：
+
+```yaml
+- id: mcp-dsh-computer-use-win
+  disabled: true
+```
+
+**调用返回 `USER_CONTROL`**
+
+Windows-MCP 的桌面控制门：你正在使用电脑时它拒绝执行。等待约 10 秒空闲后重试，
+或调用 `control_status` 查看当前状态。
+
+**DOM 模式读不到网页**
+
+`read_webpage` 的 `use_dom=true` 需要浏览器（Chrome/Edge/Firefox）有活动标签页，
+且该页面已加载完成。
 
 ## 已知限制
 
@@ -161,7 +211,46 @@ node test/electron-verify.mjs   # DSH 真实运行时（7 断言）
 2. **wincu 升级可能破坏路径**。`resolveWcuServer` 按目录名前缀匹配，升级后版本号变化会自动重新探测。
 3. **两个后端独立启动**。一个挂了另一个仍可用，但相应工具会缺失。
 4. **DOM 模式依赖浏览器**。`read_webpage` 的 `use_dom` 需要 Chrome/Edge/Firefox 活动标签页。
+5. **参数未做归一化**。两个后端的参数名保持原样（如 wincu 用 `elementId`，wm 用 `loc`/`label`），
+   模型需要按各工具自己的 schema 传参。归一化在 `Unreleased` 计划中。
+
+## 设计取舍
+
+**为什么用「聚合」而不是「改源码合并」**
+
+两个后端分别是 Node（wincu）和 Python（windows-mcp）。真合并意味着用同一种语言重写另一方的核心能力：
+
+- 把 wincu 的 OCR + UIA RuntimeId 机制移植到 Python —— 工作量大且易出错
+- 把 windows-mcp 的 DOM 提取移植到 Node —— 需要重写 CDP/IAccessible2 逻辑
+
+聚合层用 MCP 协议做边界，两个后端各自演进，互不干扰。代价是多一个进程，收益是
+**升级任一方都不需要改聚合层**（除非工具名变了，那会在 `buildToolList` 里报 `missing backend tool`）。
+
+**为什么排除 PowerShell / Registry / FileSystem / Process**
+
+不是能力不够，而是**重复且危险**：
+
+- DSH 原生已有 `pwsh`、`read`/`write`/`edit`/`glob`/`grep`，且**受 DSH 沙箱与审批管辖**
+- MCP server 是独立进程，DSH 的沙箱管不到它（`dsh-fs-sandbox` 的策略只作用于 DSH 自己的工具）
+- 保留它们等于开一条绕过沙箱的通道，收益为零
+
+## 贡献
+
+```powershell
+git clone <repo>
+cd dsh-unified-desktop
+npm test          # 需要本机已装 wincu 与 windows-mcp
+```
+
+**添加新工具**：
+
+1. 在 `lib/catalog.mjs` 的 `CATALOG` 加条目（`name` / `backend` / `target` / `description`）
+2. 跑 `node test/catalog-test.mjs` —— 它会校验命名规范、去重、能力覆盖
+3. 跑 `node test/aggregate-e2e.mjs` —— 确认后端真的提供了该工具
+
+**修改守卫规则**：编辑 `lib/guard.mjs` 的 `PS_RULES` / `REG_DENY_PREFIX`，然后跑 `npm test`。
 
 ## License
 
 MIT。聚合层原创；能力来自两个上游项目（均为 MIT）。
+
