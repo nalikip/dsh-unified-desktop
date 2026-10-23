@@ -62,5 +62,23 @@
 - `read_webpage` 的 DOM 模式依赖 Chrome/Edge/Firefox 活动标签页
 - wincu 升级后路径前缀变化会自动重新探测，但未在跨大版本升级场景验证
 
+### 修复：桌面控制门几乎不可用
+
+实测发现 windows-mcp 4.1.3 在真实使用中**几乎无法工作**：除 `ControlStatus` 外的
+所有工具都返回 `USER_CONTROL`。定位到两个叠加原因：
+
+1. 上游硬编码「用户连续空闲 10 秒」才授予控制权
+2. 部分无线鼠标接收器（实测 ROG OMNI RECEIVER）以每 15ms 频率上报**无位移**的
+   `WM_MOUSEMOVE`，导致 `_last_physical_event` 被持续刷新，空闲判定永不成立
+
+新增 `scripts/patch-backend.mjs` 两处补丁：
+
+- `control.py`：把 5 处 `10.0` 和 1 处 `15.0` 改成环境变量可配置（默认值不变）
+- `control_hooks.py`：只把「坐标真实变化」或「非移动事件」算作用户活动
+
+支持 `--check` / `--revert`，幂等，有单元测试覆盖三种场景。
+
+同时新增设置项 `idleThresholdSeconds`（默认 0.5 秒）。
+
 [Unreleased]: https://github.com/your-org/dsh-unified-desktop/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/your-org/dsh-unified-desktop/releases/tag/v0.1.0

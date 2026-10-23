@@ -111,6 +111,16 @@ uv tool install windows-mcp --python 3.14
 dsh plugin --profile web add <本目录路径>
 ```
 
+**打后端补丁（重要）**：
+
+```powershell
+node scripts/patch-backend.mjs
+```
+
+不打补丁的话，windows-mcp 会要求你**连续空闲 10 秒**才允许操作，
+否则 `screenshot` / `read_webpage` / `launch_app` 等全部返回 `USER_CONTROL`。
+详见 [docs/backend-patch.md](docs/backend-patch.md)。
+
 **重要**：本插件已聚合 wincu 的能力，需**禁用独立挂载的 wincu**避免工具重复。
 在 profile 的 `cordis.patch.yml` 加：
 
@@ -128,6 +138,7 @@ dsh plugin --profile web add <本目录路径>
 | `enabledTools` | 全部 29 个 | 暴露哪些工具 |
 | `guardEnabled` | `true` | 策略守卫开关 |
 | `auditLog` | `true` | 写审计日志 |
+| `idleThresholdSeconds` | `0.5` | windows-mcp 桌面控制门的空闲阈值（秒） |
 | `wcuServerPath` | 自动探测 | wincu server.mjs 路径 |
 | `wmExePath` | 自动探测 | windows-mcp.exe 路径 |
 | `toolCallTimeoutMs` | `180000` | 工具超时 |
@@ -197,8 +208,19 @@ node test/electron-verify.mjs   # DSH 真实 Electron 运行时（7 断言）
 
 **调用返回 `USER_CONTROL`**
 
-Windows-MCP 的桌面控制门：你正在使用电脑时它拒绝执行。等待约 10 秒空闲后重试，
-或调用 `control_status` 查看当前状态。
+windows-mcp 的桌面控制门。两种情况：
+
+1. **没打后端补丁** → 执行 `node scripts/patch-backend.mjs` 后重启
+2. **打了补丁但你正在操作** → 停下鼠标键盘约 `idleThresholdSeconds` 秒再试
+
+用 `control_status` 查看当前状态：`state: "ready"` 表示可操作，`"user"` 表示正在等你空闲。
+
+如果一直卡在 `user` 且 `wait_seconds` 固定在某个值附近不动，说明有设备在高频上报
+无位移的鼠标移动（常见于无线接收器）。补丁 2 已处理这种情况，确认它是否应用：
+
+```powershell
+node scripts/patch-backend.mjs --check
+```
 
 **DOM 模式读不到网页**
 
