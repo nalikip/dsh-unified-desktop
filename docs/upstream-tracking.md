@@ -53,6 +53,37 @@ owner._last_point = _pt
 ### 进展
 
 - 2026-10-23：提交 issue，等待回复。
+- 2026-10-25：维护者 `Jeomon` 回复 **"make a PR"**。
+- 2026-10-25：提交 PR [#508]。
+  - 分支：`nalikip:fix/zero-delta-mouse-motion`
+  - 基线：`CursorTouch:main` @ `0db91ff`
+  - 改动：3 文件，+151 −4（`control.py` +1、`control_hooks.py` +17/−4、新增测试 133 行）
+  - 实现方式与本地补丁不同：不是「坐标变化或非移动事件」，而是
+    **光标基线 + 按键变化或真实位移**才算活动，同时让注入事件也更新基线，
+    避免 AI 移动光标后静止设备被误判。零位移 raw 报告同样丢弃。
+  - 测试：新增 `tests/test_control_zero_delta_motion.py`（8 例）；
+    本地全量 `1335 passed, 6 skipped`。
+- 2026-10-25：PR 曾被误关闭，已重开，现为 **open / mergeable**。
+
+### CI 状态（截至 2026-10-25）
+
+| 运行 | 结论 | 说明 |
+|---|---|---|
+| #241 `Tests` | `failure` | **不是测试失败**。页面注明：`This workflow run required approval but was not approved before it expired.` 首次贡献者需维护者手动批准 workflow |
+| 第二次 `Tests` | `action_required` | 同上，等待维护者批准 |
+
+**即 CI 尚未真正执行过本项目代码。** 需要维护者点一次 "Approve and run"。
+
+### 本地验证的一个坑
+
+在本机跑 `pytest` 时 `test_scrape_ssrf.py` 有 1 例失败，原因不是代码：
+`safe_get()` 内部用 `requests.Session()`，默认 `trust_env=True`，会读取
+**WinINET 系统代理**。系统代理开启时 `rebind.example` 的请求被转发到代理，
+返回 502 而非预期的 200。
+
+验证方法：临时把 `HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings`
+的 `ProxyEnable` 置 0 后重跑，**13 例全过**。这与 PR 描述中「DNS 行为差异」的
+说法不准确，实际是系统代理。**CI 上该测试在 `main` 是绿的，因此与本 PR 无关。**
 
 ### 相关文件
 
@@ -60,3 +91,5 @@ owner._last_point = _pt
 - `docs/diagnosis-user-control.md` — 完整排查过程
 - `scripts/patch-backend.mjs` — 本地补丁
 - `docs/backend-patch.md` — 补丁说明
+
+[#508]: https://github.com/CursorTouch/Windows-MCP/pull/508
