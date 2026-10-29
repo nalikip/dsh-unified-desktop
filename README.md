@@ -1,26 +1,62 @@
 # dsh-unified-desktop
 
-**一个 MCP 插件，统一两套 Windows 桌面自动化能力。**
+**两个 Windows 桌面自动化 MCP，44 个工具，其中 15 个是重复或危险的。**
 
-把 [dsh-computer-use-win](https://github.com/Yu-tao-Li/dsh-computer-use-win)（UI Automation + OCR + 元素级语义操作）
-和 [Windows-MCP](https://github.com/CursorTouch/Windows-MCP)（浏览器 DOM + 区域截图 + 应用启动）合并成**一个工具面**，
-去重后暴露 29 个工具，模型看到 `mcp__desk__*`。
+这个插件把它们合成一个：**29 个工具，一个命名空间，内建危险调用拦截。**
+
+不是简单的代理转发。它知道 `click` 该用哪个后端（wincu 走 UIA Invoke，不抢焦点），
+`ocr` 只有一边有，`read_webpage` 的 DOM 模式只有另一边有，
+而 `PowerShell` / `Registry` / `FileSystem` / `Process` 两边都不该暴露。
+
+> 合并的是 [dsh-computer-use-win](https://github.com/Yu-tao-Li/dsh-computer-use-win)（UI Automation + OCR + 元素级语义操作）
+> 与 [Windows-MCP](https://github.com/CursorTouch/Windows-MCP)（浏览器 DOM + 区域截图 + 应用启动）。
+> 每个取舍的理由见 **[能力归属矩阵](docs/capability-matrix.md)**。
 
 ---
 
-## 为什么需要它
+## 它解决的问题
 
-分开装两个插件的结果：
+单独装这两个插件，模型会看到 44 个工具、两份互相打架的说明：
+
+| 问题 | 具体表现 |
+|---|---|
+| **能力重复** | `click` / `Click`、`type_text` / `Type`、`scroll` / `Scroll`… 共 10 组，模型不知道该选哪个 |
+| **上下文吃紧** | 两套 schema 合计 61,599 tokens（实测），光工具定义就吃掉大半上下文 |
+| **危险工具裸露** | windows-mcp 默认暴露 `PowerShell`（任意命令）、`Registry`（改注册表）、`FileSystem`、`Process`（kill） |
+| **无统一入口** | 两个 MCP server 各自启动，工具命名空间分裂成两个 |
+
+## 合并后的变化
 
 | | 分开装 | 本插件 |
 |---|---|---|
 | MCP server 数 | 2 | **1** |
 | 工具数 | 44 | **29** |
-| 上下文占用 | ≈ 17,012 tokens | **≈ 6,749 tokens** |
-| 能力重叠 | 严重（两套点击/输入/截图） | **已去重** |
-| 危险工具 | 需额外守卫插件 | **内建** |
+| 重复能力 | 10 组 | **已去重** |
+| 危险工具 | 全部裸露 | **内建守卫拦截** |
+| 工具命名空间 | 分裂成两个 | **统一 `mcp__desk__*`** |
 
-**省 60% 上下文，且能力不丢。**
+工具数与去重结果由 `lib/catalog.mjs` 的 `CATALOG` / `EXCLUDED` 定义，
+`node test/catalog-test.mjs` 会校验一致性（43 项断言）。
+
+**关于上下文占用的说明**：44 个工具的实测基线是 61,599 tokens，
+数据在 [docs/tool-footprint.json](docs/tool-footprint.json)（2026-10-22 从两个后端实时拉 `tools/list` 后统计）。
+合并后只保留 29 个工具的 schema，但**具体数值随上游 schema 体积变化，本项目未持续测量**——
+本插件只做去重与重命名，不裁剪单个工具的 schema。
+想在自己的环境里量，可以跑 `node test/aggregate-e2e.mjs`，它会打印当前工具面的字符数与估算 token。
+
+## 和通用 MCP 网关有什么不同
+
+GitHub 上已有成熟的多 MCP 聚合方案（[1MCP](https://github.com/1mcp-app/agent) 525★、
+[IBM mcp-context-forge](https://github.com/IBM/mcp-context-forge) 4.7k★、
+[MCP-Gateway](https://github.com/aiguicai/MCP-Gateway) 155★）。它们是**横向**的：接任意 N 个
+server，靠配置里的 filter 规则裁剪工具面。
+
+本项目是**纵向**的：只为两个特定后端服务，靠一张**能力归属表**做语义级去重——
+它知道 `Snapshot` 该拆成「树模式用 wincu、DOM 模式并入 read_webpage」，
+而通用网关只能按名字过滤，不知道这两个工具其实是同一件事的不同实现。
+
+**如果你要接的是别的 MCP server**，用上面那些通用网关更合适。
+**如果你就在 Windows 上用这两个后端**，这张归属表是为你写的。
 
 ## 架构
 
@@ -36,6 +72,8 @@ DSH ──stdio──> [aggregate.mjs] ──stdio──> wincu server.mjs
 3. **内建守卫** —— 危险参数在转发前拦截
 
 ## 能力分工
+
+一句话概括：**交互类全给 wincu，系统与浏览器类全给 windows-mcp。**
 
 **选 wincu 的（它更强）**：
 
@@ -75,6 +113,9 @@ DSH ──stdio──> [aggregate.mjs] ──stdio──> wincu server.mjs
 `Click`、`Type`、`Move`、`Scroll`、`Shortcut`、`Wait`、`WaitFor`、`Snapshot`、`MultiSelect`、`MultiEdit`
 
 完整清单见 [lib/catalog.mjs](lib/catalog.mjs) 的 `EXCLUDED`。
+
+> 每一项「为什么留这个、为什么砍那个」的完整推导，见
+> **[docs/capability-matrix.md](docs/capability-matrix.md)**。
 
 ## 工具清单（29 个）
 

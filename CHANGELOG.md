@@ -19,8 +19,11 @@
 
 **聚合架构**
 - 单一 MCP 入口（`mcp__desk__*`），背后驱动 wincu 与 windows-mcp 两个后端
-- 工具面去重合并：44 个工具 → 29 个
-- 上下文占用从 ≈17,012 tokens 降至 ≈6,749 tokens（-60%）
+- 工具面去重合并：44 个工具 → 29 个（移除 15 个：10 个能力重复 + 4 个危险 + 1 个管理入口）
+- 去重前的上下文基线实测为 ≈61,599 tokens（44 个工具的 schema 合计，
+  见 `docs/tool-footprint.json`）。去重后保留 29 个工具的 schema，
+  由于本插件只做去重与重命名、不裁剪单个 schema，实际降幅随上游 schema 体积变化，
+  本项目未持续测量，故不在此给出单一数字。
 
 **能力覆盖**
 - wincu 侧：`snapshot` `read_tree` `find` `ocr` `element_info` `click` `double_click`
