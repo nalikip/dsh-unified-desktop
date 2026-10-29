@@ -121,6 +121,19 @@ node scripts/patch-backend.mjs
 否则 `screenshot` / `read_webpage` / `launch_app` 等全部返回 `USER_CONTROL`。
 详见 [docs/backend-patch.md](docs/backend-patch.md)。
 
+> ⚠️ **这个补丁会直接修改你本机的 windows-mcp 安装**
+>
+> `scripts/patch-backend.mjs` 不是插件，它改写 `uv tool` 安装目录下的
+> `windows_mcp/desktop/control.py` 与 `control_hooks.py` 源文件。执行前请知悉：
+>
+> - **先备份或确认可回滚**。撤销用 `node scripts/patch-backend.mjs --revert`；
+>   彻底还原也可以 `uv tool install --force windows-mcp --python 3.14` 重装。
+> - **上游不认可这个修改**。它是本地规避 [#498](https://github.com/CursorTouch/Windows-MCP/issues/498) 的权宜之计。
+>   该缺陷已在 [PR #508](https://github.com/CursorTouch/Windows-MCP/pull/508) 修复并合并进上游 `main`，
+>   但**尚未进入 PyPI 发布版**（最新仍是 0.8.8）。上游发新版本后应移除本补丁。
+> - **升级 windows-mcp 会让补丁失效**，需要重新执行。
+> - 补丁状态检查：`node scripts/patch-backend.mjs --check`
+
 **重要**：本插件已聚合 wincu 的能力，需**禁用独立挂载的 wincu**避免工具重复。
 在 profile 的 `cordis.patch.yml` 加：
 
@@ -291,4 +304,6 @@ npm test          # 需要本机已装 wincu 与 windows-mcp
 ## License
 
 MIT。聚合层原创；能力来自两个上游项目（均为 MIT）。
+
+上游的版权声明见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
 

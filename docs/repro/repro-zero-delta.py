@@ -10,6 +10,11 @@ Expected (fixed):  _last_physical_event stays put for repeated identical points.
 
 No Windows session, no real mouse and no MCP client is required: the hook
 callback is called directly with a synthetic MSLLHOOKSTRUCT.
+
+Attribution: the MSLLHOOKSTRUCT / POINT ctypes layout below mirrors the
+structures used by windows_mcp (MIT License, Copyright (c) CursorTouch,
+https://github.com/CursorTouch/Windows-MCP). Only the field layout is reused,
+which is dictated by the Win32 API, not by the upstream implementation.
 """
 
 import ctypes
