@@ -2,10 +2,18 @@
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
-const ELECTRON = 'D:\\dsh\\DSH Desktop\\DSH Desktop.exe'
-const AGG = 'C:\\Users\\Lenovo\\Documents\\deepseek-harness\\default-workspace\\winmcp-guard\\dsh-unified-desktop\\lib\\aggregate.mjs'
-const WCU = path.join(process.env.APPDATA, 'dsh-desktop', 'harness', 'profiles',
+const here = path.dirname(fileURLToPath(import.meta.url))
+const AGG = path.join(here, '..', 'lib', 'aggregate.mjs')
+
+// Electron 可执行文件：优先环境变量，其次从当前 DSH 进程推断，最后回退常见安装位置
+const ELECTRON = process.env.UD_ELECTRON
+  || (process.env.PORTABLE_EXECUTABLE_FILE ?? '')
+  || (process.versions.electron ? process.execPath : '')
+  || path.join(process.env.LOCALAPPDATA || '', 'Programs', 'dsh-desktop', 'DSH Desktop.exe')
+
+const WCU = process.env.UD_WCU_SERVER || path.join(process.env.APPDATA, 'dsh-desktop', 'harness', 'profiles',
   '.generations', 'live', 'dsh-computer-use-win+0.5.0+b20332af32af',
   'node_modules', 'dsh-computer-use-win', 'mcp', 'server.mjs')
 const WM = path.join(process.env.APPDATA, 'uv', 'tools', 'windows-mcp', 'Scripts', 'windows-mcp.exe')

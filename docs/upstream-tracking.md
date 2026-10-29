@@ -7,8 +7,8 @@
 - **仓库**：https://github.com/CursorTouch/Windows-MCP
 - **链接**：https://github.com/CursorTouch/Windows-MCP/issues/498
 - **提交时间**：2026-10-23
-- **状态**：open
-- **版本**：windows-mcp 0.8.8
+- **状态**：**已修复** —— 2026-10-25 由维护者 `Jeomon` 合并 PR [#508]（merge commit `3832b6b`）
+- **版本**：windows-mcp 0.8.8（修复尚未进入 PyPI 发布版）
 
 ### 问题
 
@@ -63,7 +63,14 @@ owner._last_point = _pt
     避免 AI 移动光标后静止设备被误判。零位移 raw 报告同样丢弃。
   - 测试：新增 `tests/test_control_zero_delta_motion.py`（8 例）；
     本地全量 `1335 passed, 6 skipped`。
-- 2026-10-25：PR 曾被误关闭，已重开，现为 **open / mergeable**。
+- 2026-10-25：PR 曾被误关闭，已重开。
+- 2026-10-25 11:27 UTC：**PR 已被合并**（merge commit `3832b6b`），issue #498 同时关闭。
+  改动 3 文件 +151/−4，无 review 意见一次通过。
+
+### 上游修复未发版
+
+`windows-mcp` 在 PyPI 的最新发布仍是 **0.8.8**，合并进 `main` 的修复尚未进入任何发布版。
+因此本项目仍需保留 `scripts/patch-backend.mjs` 本地补丁，直到上游发新版本。
 
 ### CI 状态（截至 2026-10-25）
 
@@ -73,6 +80,9 @@ owner._last_point = _pt
 | 第二次 `Tests` | `action_required` | 同上，等待维护者批准 |
 
 **即 CI 尚未真正执行过本项目代码。** 需要维护者点一次 "Approve and run"。
+
+> 后续：维护者未单独批准 CI，而是直接合并了 PR。上游的 `main` 分支测试由仓库自身的
+> push CI 覆盖，因此本 PR 的测试实际未在 CI 上跑过——合并依据是本地 `1335 passed`。
 
 ### 本地验证的一个坑
 
