@@ -63,6 +63,11 @@ server，靠配置里的 filter 规则裁剪工具面。
 **如果你要接的是别的 MCP server**，用上面那些通用网关更合适。
 **如果你就在 Windows 上用这两个后端**，这张归属表是为你写的。
 
+![44 个后端工具去重为 29 个](assets/dedup.svg)
+
+> 这张图由 `node scripts/gen-dedup-svg.mjs` 从 `lib/catalog.mjs` 生成，
+> 数字与代码永远一致，不会随文档改动而失同步。
+
 ## 架构
 
 ```

@@ -8,6 +8,7 @@
     "lib/",
     "scripts/",
     "docs/",
+    "assets/",
     "cordis.patch.yml",
     "README.md",
     "CHANGELOG.md",
@@ -37,6 +38,7 @@
     "patch": "node scripts/patch-backend.mjs",
     "unpatch": "node scripts/patch-backend.mjs --revert",
     "diagnose": "node scripts/diagnose-gate.mjs",
+    "gen:svg": "node scripts/gen-dedup-svg.mjs",
     "check": "node --check lib/aggregate.mjs && node --check lib/catalog.mjs && node --check lib/dsh-plugin.mjs && node --check lib/guard.mjs && node --check scripts/patch-backend.mjs && node --check scripts/diagnose-gate.mjs"
   },
   "keywords": [
