@@ -1,5 +1,10 @@
 # dsh-unified-desktop
 
+[![CI](https://github.com/nalikip/dsh-unified-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/nalikip/dsh-unified-desktop/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](package.json)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)](package.json)
+
 **两个 Windows 桌面自动化 MCP，44 个工具，其中 15 个是重复或危险的。**
 
 这个插件把它们合成一个：**29 个工具，一个命名空间，内建危险调用拦截。**
