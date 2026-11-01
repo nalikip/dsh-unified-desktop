@@ -17,6 +17,9 @@
 > 与 [Windows-MCP](https://github.com/CursorTouch/Windows-MCP)（浏览器 DOM + 区域截图 + 应用启动）。
 > 每个取舍的理由见 **[能力归属矩阵](docs/capability-matrix.md)**。
 
+> 📦 已上架 DSH 插件市场 —— 在 **设置 → 插件市场** 搜索 `dsh-unified-desktop`，或
+> 在 [awesome-dsh-plugin 页面](https://awesome-dsh-plugin.com/p/nalikip/dsh-unified-desktop/) 查看。
+
 ---
 
 ## 它解决的问题
